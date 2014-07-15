@@ -1,8 +1,8 @@
 # Reproducible Research: Peer Assessment 1
+================================================================================
 
 
-
-This document was created Mon Jul 14 17:47:24 2014.
+This document was created Tue Jul 15 09:35:49 2014.
 
 This assignment makes use of data from a personal activity monitoring device. This device collects data at 5 minute intervals through out the day. The data consists of two months of data from an anonymous individual collected during the months of October and November, 2012 and includes the number of steps taken in 5 minute intervals each day.
 
@@ -11,18 +11,10 @@ The data and Rmd markdown template were obtained by Forking and Cloning the GitH
 ## Loading and preprocessing the data
 
 ```r
-setwd("~/Desktop/RepData_PeerAssessment1")
-files <- list.files()
-files
-```
+#setwd("~/Desktop/RepData_PeerAssessment1")
+#files <- list.files()
+#files
 
-```
-## [1] "activity.csv"     "activity.zip"     "doc"             
-## [4] "Figures"          "instructions_fig" "PA1_template.Rmd"
-## [7] "README.md"        "RepoResPA1.html"  "RepoResPA1.Rmd"
-```
-
-```r
 ## read and summarize the activity monitoring data
 act1 <- read.csv(file = "activity.csv", header = TRUE)
 str(act1)
@@ -51,12 +43,9 @@ summary(act1)
 ```
 
 ## What is mean total number of steps taken per day?
+1. Make a histogram of the total number of steps taken each day
+
 There is some ambiguity in the instructions as to whether day is referring to days of the week or date.  Let's assume the calendar date, because the instructions refer to weekdays later.
-
-"For this part of the assignment, you can ignore the missing values in the dataset."
-
-The assignment instructions state "Make a histogram of the total number of steps taken each day".  So here it is, but more interesting is the total number of steps by date as shown in the bar plot below
-
 
 
 ```r
@@ -66,13 +55,13 @@ totstepsday <- sapply(split1, sum)
 hist(totstepsday, main = "Daily Total Steps")
 ```
 
-![plot of chunk unnamed-chunk-2](Figures/unnamed-chunk-2.png) 
+![plot of chunk hist1](Figures/hist1.png) 
 
 ```r
 #barplot(totstepsday, xlab = "date", ylab = "total steps", main = "Total Steps by Date")
 ```
 
-Calculate and report the mean and median total number of steps taken per day
+2. Calculate and report the **mean** and **median** total number of steps taken per day
 
 
 ```r
@@ -84,7 +73,9 @@ The mean steps taken per day is 1.0766 &times; 10<sup>4</sup> and the the median
 
 ## What is the average daily activity pattern?
 
-Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).  The interval data should be converted from a numeric to time value.  0 is midnight, 500 is 5:00 am.
+1. Make a time series plot (i.e. `type = "l"`) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+
+2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 
 ```r
@@ -96,10 +87,9 @@ plot(x = means1$interval, y = means1$steps, type = "l", xlab = "interval",
      ylab = "mean steps", main = "Mean Steps by Interval")
 ```
 
-![plot of chunk unnamed-chunk-4](Figures/unnamed-chunk-4.png) 
+![plot of chunk meansteps](Figures/meansteps.png) 
 
-
-Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 
 ```r
@@ -115,10 +105,10 @@ maxinterval
 
 The maximum steps for a five minute interval is 206.1698 and is in interval 835.
 
-
 ## Imputing missing values
+Note that there are a number of days/intervals where there are missing values (coded as `NA`). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
-1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs).
+1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with `NA`s)
 
 
 ```r
@@ -131,11 +121,13 @@ The number of missing values in the dataset is 2304.
 
 3.  Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-Replace NA values in steps with mean values for each time interval
+Replace NA values in steps with mean values for each time interval.
 
 ```r
 act2 <- act1
+# how many missing values
 missing <- is.na(act2$steps)
+# fill missing values with mean steps for each interval
 act2[missing,"steps"] <- means1$steps
 ```
 
@@ -148,7 +140,7 @@ totstepsday2 <- sapply(split2, sum)
 hist(totstepsday2, main = "Daily Total Steps")
 ```
 
-![plot of chunk unnamed-chunk-8](Figures/unnamed-chunk-8.png) 
+![plot of chunk imputed](Figures/imputed.png) 
 
 ```r
 #barplot(totstepsday2, xlab = "date", ylab = "total steps", main = "Total Steps by Date")
@@ -170,7 +162,7 @@ t
 ## Median    10765   10766
 ```
 
-The missing values for steps for 8 days were replaced with the 288 mean interval values.  This has an impact of total steps for the entire dataset as can be seen in the histogram and barplots, but no difference in the mean total steps per day.  The median total steps per day is different by 1 step.
+The missing values for steps for 8 days were replaced with the 288 mean interval values.  This has an impact on total steps for the entire dataset as can be seen in the histogram and barplots, but no difference in the mean total steps per day.  The median total steps per day is different by 1 step.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -208,7 +200,6 @@ table(act3$type)
 ##   12960    4608
 ```
 
-
 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
 Two plots are provided below.  The first shows mean steps per interval in one panel color coded on weekend/weekday.  This plot allows easy comparison of the weekend to weekday and that the subject gets started later in the day on weekends.  The second plot is the two panel plot requested in the instructions for this assignment.
@@ -219,10 +210,15 @@ Two plots are provided below.  The first shows mean steps per interval in one pa
 melt3 <- melt(act3, id = c("date", "dayofweek", "type", "interval"), variable = "steps")
 # calculate the mean steps for each interval by type
 means3 <- dcast(melt3, interval + type ~ steps, fun = mean, na.rm = TRUE)
-#library(ggplot2)
-#ggplot(means3, aes(interval, steps, col = type)) + 
-#    geom_line() +
-#    theme_bw()
+library(ggplot2)
+ggplot(means3, aes(interval, steps, col = type)) + 
+    geom_line() +
+    theme_bw()
+```
+
+![plot of chunk weekender](Figures/weekender1.png) 
+
+```r
 #ggplot(means3, aes(interval, steps)) +
 #    geom_line() +
 #    facet_wrap(~type, ncol = 1) +
@@ -231,5 +227,5 @@ library(lattice)
 xyplot(steps ~ interval | type, data = means3, type = "l", layout = c(1,2))
 ```
 
-![plot of chunk unnamed-chunk-10](Figures/unnamed-chunk-10.png) 
+![plot of chunk weekender](Figures/weekender2.png) 
 
